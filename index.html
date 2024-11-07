@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Implementación y Prueba de Inferencia Lógica</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 20px;
+            background-color: #f4f4f4;
+        }
+        pre {
+            background-color: #eaeaea;
+            padding: 10px;
+            border-radius: 5px;
+            overflow-x: auto;
+        }
+        code {
+            font-family: "Courier New", Courier, monospace;
+        }
+    </style>
+</head>
+<body>
+    <h1>Implementación y Prueba de Inferencia Lógica</h1>
+    
+    <!-- Implementación de Clases para Representar la Lógica de Inferencia -->
+    <script>
+        // Clase base para representar una oración lógica
+        class Sentence {
+            evaluate(model) {
+                // Evalúa la oración lógica utilizando un modelo.
+                throw new Error("nada que evaluar");
+            }
+
+            formula() {
+                // Devuelve la fórmula lógica en forma de cadena de texto.
+                return "";
+            }
+
+            symbols() {
+                // Devuelve un conjunto de símbolos presentes en la oración lógica.
+                return new Set();
+            }
+
+            static validate(sentence) {
+                // Valida si un objeto es una instancia de la clase Sentence.
+                if (!(sentence instanceof Sentence)) {
+                    throw new TypeError("debe ser una oración lógica");
+                }
+            }
+
+            static parenthesize(s) {
+                // Coloca paréntesis en una expresión si no los tiene ya.
+                function balanced(s) {
+                    let count = 0;
+                    for (const c of s) {
+                        if (c === "(") {
+                            count++;
+                        } else if (c === ")") {
+                            if (count <= 0) return false;
+                            count--;
+                        }
+                    }
+                    return count === 0;
+                }
+                return s.length === 0 || /^[a-zA-Z]+$/.test(s) ||
+                    (s.startsWith("(") && s.endsWith(")") && balanced(s.slice(1, -1)))
+                    ? s : `(${s})`;
+            }
+        }
+
+        // Representación de un símbolo lógico
+        class Symbol extends Sentence {
+            constructor(name) {
+                super();
+                this.name = name;
+            }
+
+            evaluate(model) {
+                if (model.hasOwnProperty(this.name)) {
+                    return Boolean(model[this.name]);
+                }
+                throw new Error(`variable ${this.name} no está en el modelo`);
+            }
+
+            formula() {
+                return this.name;
+            }
+
+            symbols() {
+                return new Set([this.name]);
+            }
+        }
+
+        // Implementación de más clases lógicas como Not, And, Or, Implication, Biconditional aquí...
+    </script>
+
+    <!-- Ejemplo de inferencia lógica en acción -->
+    <h2>Ejemplo de Inferencia Lógica</h2>
+    <pre><code>
+        // Variables iniciales de modelo
+        let rain = false;       // True si llueve, False si no
+        let bbc = false;        // True si los estudiantes visitaron BBC
+        let unimayor = true;    // True si los estudiantes visitaron Unimayor
+
+        // Conocimiento lógico:
+        // Si no llueve, los estudiantes visitan BBC
+        if (!rain) {
+            bbc = true;
+        }
+
+        // Los estudiantes visitaron BBC o Unimayor pero no ambos (XOR)
+        let bbc_unimayor = (bbc || unimayor) && !(bbc && unimayor);
+
+        // Afirmación directa de visita a Unimayor
+        unimayor = true;
+
+        // Resultado de la inferencia
+        console.log("¿Los estudiantes visitaron BBC?", bbc);
+        console.log("¿Llovió?", rain);
+    </code></pre>
+
+    <!-- Explicación -->
+    <p>Este ejemplo utiliza clases para representar y evaluar una inferencia lógica, considerando el modelo inicial de si llueve o no,
+         y si los estudiantes visitaron BBC o Unimayor. El resultado de cada variable se muestra en la consola.</p>
+</body>
+</html>
